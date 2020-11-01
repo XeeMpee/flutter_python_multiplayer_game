@@ -15,7 +15,10 @@ message Entity {
   uint32 id = 1;
   string type = 2;
   Position position = 3;
-  google.protobuf.Any entity = 4;
+  oneof entity {
+	Player player = 4;
+	Wall wall = 5;
+  }
 }
 
 message Player {
@@ -23,10 +26,10 @@ message Player {
   PlayerState playerState = 2;
 
   enum PlayerState {
-   MOVE_UP = 0
-   MOVE_DOWN = 0
-   MOVE_LEFT = 0
-   MOVE_DOWN = 0
+   MOVE_UP = 0;
+   MOVE_LEFT = 1;
+   MOVE_RIGHT = 2;
+   MOVE_DOWN = 3;
   }
 }
 
