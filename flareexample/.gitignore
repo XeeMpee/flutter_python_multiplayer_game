@@ -45,4 +45,4 @@ app.*.map.json
 
 
 # Proto generated:
-gen/*
+lib/communication/proto/gen/*
