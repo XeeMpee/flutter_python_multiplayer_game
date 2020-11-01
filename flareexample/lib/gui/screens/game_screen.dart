@@ -57,7 +57,7 @@ class GameScreen extends StatelessWidget {
   void onGameStarted(BuildContext context) {
     GameScreenArguments args = ModalRoute.of(context).settings.arguments;
     __playerName = args.playerName;
-    game.initPlayerEntity(initPlayer: Player(playerId: __playerName, x:0.0, y:0.0));
+    game.initPlayerEntity(initPlayer: Player.create(playerId: __playerName, x:0.0, y:0.0));
     // game.player.playerId = __playerName;
     // game.socketChannel.sink
         // .add(Message.composeJson([PlayerMessage(player: game.player)]));

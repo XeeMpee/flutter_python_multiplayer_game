@@ -9,9 +9,10 @@ import 'package:flareexample/gui/screens/auth_screen.dart';
 import 'package:flareexample/gui/screens/game_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:web_socket_channel/html.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flareexample/tools/websocket_channel_factory/websocket_channel_factory.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,17 +22,7 @@ void main() async {
 
   // Setting websocket channel:
   final String channelUrl = "ws://192.168.0.206:8765/";
-  WebSocketChannel channel;
-  try {
-    if (Platform.isAndroid && Platform.isIOS) {
-      IOWebSocketChannel.connect(channelUrl);
-    } else {
-      // other platforms support
-    }
-  } on UnsupportedError {
-    // IsWeb...
-    channel = HtmlWebSocketChannel.connect(channelUrl);
-  }
+  WebSocketChannel channel = WebSocketFactory.create(channelUrl);
 
   EntitiesManager entitiesManager = EntitiesManager();
   RemoteGameServer remoteGameServer = RemoteGameServer(

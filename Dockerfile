@@ -7,8 +7,10 @@ RUN apt-get update\
 	&& apt-get install -y git\
 	&& apt-get install -y curl\
 	&& apt-get install -y unzip\
+	&& apt-get install -y tar\
 	&& DEBIAN_FRONTEND="noninteractive" apt-get install -y tzdata\
-	&& apt-get install -y openjdk-8-jdk
+	&& apt-get install -y openjdk-8-jdk\
+	&& apt-get install -y protobuf-compiler
 
 # Installing flutter: 
 # ----------------------------
@@ -42,7 +44,13 @@ RUN flutter upgrade
 RUN flutter config --enable-web
 RUN flutter doctor
 
+# Protobuf dart plugin:
+# ----------------------------
+RUN dart pub global activate protoc_plugin
+ENV PATH="PATH=${PATH}:/root/.pub-cache/bin"
+
 # Creating workspace:
 # ----------------------------
-RUN mkdir workspace
+RUN mkdir -p workspace/common
+RUN mkdir -p workspace/flutterapp
 

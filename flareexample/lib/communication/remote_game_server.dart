@@ -1,32 +1,31 @@
-import 'dart:convert';
-import 'package:flareexample/communication/message.dart';
+import 'package:flareexample/communication/proto/gen/lib/communication/proto/messages.pb.dart'
+    as Proto;
+import 'package:flareexample/entities/player.dart';
 import 'package:flareexample/game/entities_manager.dart';
 import 'package:meta/meta.dart';
 
-import 'package:flareexample/entities/entities_factory.dart';
 import 'package:flareexample/entities/entity.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RemoteGameServer {
   WebSocketChannel wsChannel;
   EntitiesManager entitiesManager;
-  EntitiesFactory entitiesFactory = new EntitiesFactory();
 
-  Map<String, Function> __handlers = Map<String, Function>();
+  Map<Type, Function> __handlers = Map<Type, Function>();
 
   RemoteGameServer({@required this.wsChannel, @required this.entitiesManager}) {
     wsChannel.stream.listen(__onMessage);
 
     // Message handlers:
-    __handlers["update_message"] = __onEntitiesUpdateMessage;
+    __handlers[Proto.Entities] = __onEntitiesMessage;
     // __handlers["message_tag"] = __onMessageHandler;
     // __handlers["message_tag"] = __onMessageHandler;
     // __handlers["message_tag"] = __onMessageHandler;
     // ...
   }
 
-  void send(List<Message> messages) {
-    wsChannel.sink.add(Message.composeJson(messages));
+  void send(Proto.Message message) {
+    wsChannel.sink.add(message.writeToBuffer());
   }
 
   get sink => wsChannel.sink;
@@ -34,21 +33,24 @@ class RemoteGameServer {
 
   // ---------------------------------------
 
-  void __onMessage(dynamic messages) {
-    print("Messages received: $messages");
-    dynamic decoded = json.decode(messages);
-    dynamic messagesList = decoded;
-    for (Map<String, dynamic> messagesRawData in messagesList) {
-      String type = messagesRawData["type"];
-      __handlers[type](messagesRawData);
+  void __onMessage(dynamic rawMessage) {
+    Proto.Message message = Proto.Message.fromBuffer(rawMessage);
+    print("Messages received: $message");
+    if (message.hasEntities()) {
+      __handlers[Proto.Entities](message.entities);
+    } else {
+      // Add new messages...
     }
   }
 
-  __onEntitiesUpdateMessage(Map<String, dynamic> data) {
+  // ----------- handlelrs ---------------
+  __onEntitiesMessage(Proto.Entities protoEntities) {
     List<Entity> entities = [];
-    for (Map<String, dynamic> entityRawData in data["entities"]) {
-      entities.add(entitiesFactory.create(entityRawData));
+    for (Proto.Entity entity in protoEntities.entities) {
+      if (entity.hasPlayer()) {
+        entities.add(Player.fromProto(entity));
+      }
     }
-    entitiesManager.update(entities);
+    this.entitiesManager.update(entities);
   }
 }

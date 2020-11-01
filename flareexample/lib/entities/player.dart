@@ -1,9 +1,10 @@
 import 'package:flame/components/component.dart';
+import 'package:flareexample/communication/proto/gen/lib/communication/proto/messages.pb.dart'
+    as Proto;
 import 'package:flareexample/entities/entity.dart';
 import 'package:flareexample/sprites/player_components.dart';
 
 class Player implements Entity {
-  static String entityType = "Player";
   PlayerComponent playerComponent;
   PlayerComponentFactory componentFactory = PlayerComponentFactory();
 
@@ -12,12 +13,27 @@ class Player implements Entity {
   double yPos = 0.0;
   PlayerState state = PlayerState.PLAYER_DOWN;
 
-  Player({this.playerId, double x = 0.0, double y = 0.0, PlayerState playerState=PlayerState.PLAYER_DOWN}) {
+  // --------- default factory -----------
+  Player.create(
+      {this.playerId,
+      double x = 0.0,
+      double y = 0.0,
+      PlayerState playerState = PlayerState.PLAYER_DOWN}) {
     playerComponent = componentFactory.create(playerState);
     this.x = x;
     this.y = y;
   }
 
+  // --------- proto factory -----------
+  Player.fromProto(Proto.Entity protoEntity)
+      : this.create(
+            playerId: protoEntity.id,
+            x: protoEntity.position.x,
+            y: protoEntity.position.y,
+            playerState: __convertToPlayerStateFromProto(
+                protoEntity.player.playerState));
+
+  // public methods:
   void switchComponent() {
     if (playerComponent.state == null) {
       playerComponent = componentFactory.create(PlayerState.PLAYER_DOWN);
@@ -32,6 +48,7 @@ class Player implements Entity {
     }
   }
 
+  // getters and setteres:
   @override
   String get id => playerId;
 
@@ -42,12 +59,8 @@ class Player implements Entity {
   double get y => yPos;
 
   @override
-  String get type => entityType;
-
-  @override
   Component get component => playerComponent;
 
-  
   set x(double x) {
     xPos = x;
     playerComponent.x = x;
@@ -56,5 +69,51 @@ class Player implements Entity {
   set y(double y) {
     yPos = y;
     playerComponent.y = y;
+  }
+
+
+  // conversions proto:
+  @override
+  Proto.Entity toProto(){
+    Proto.Position protoPosition = Proto.Position();
+    protoPosition.x = x;
+    protoPosition.y = y;
+
+    Proto.Player protoPlayer = Proto.Player();
+    protoPlayer.playerState = __convertToProtoFromPlayerState(state);
+
+    Proto.Entity protoEntity = Proto.Entity();
+    protoEntity.id = playerId;
+    protoEntity.position = protoPosition;
+    protoEntity.player = protoPlayer;
+
+    return protoEntity;
+  }
+
+  static PlayerState __convertToPlayerStateFromProto(
+      Proto.Player_PlayerState state) {
+    Proto.Player_PlayerState protoState = state;
+    if (protoState == Proto.Player_PlayerState.MOVE_DOWN) {
+      return PlayerState.PLAYER_DOWN;
+    } else if (protoState == Proto.Player_PlayerState.MOVE_UP) {
+      return PlayerState.PLAYER_UP;
+    } else if (protoState == Proto.Player_PlayerState.MOVE_LEFT) {
+      return PlayerState.PLAYER_LEFT;
+    } else {
+      return PlayerState.NONE;
+    }
+  }
+
+  static Proto.Player_PlayerState __convertToProtoFromPlayerState(
+      PlayerState state) {
+    if (state == PlayerState.PLAYER_DOWN) {
+      return Proto.Player_PlayerState.MOVE_DOWN;
+    } else if (state == PlayerState.PLAYER_UP) {
+      return Proto.Player_PlayerState.MOVE_UP;
+    } else if (state == PlayerState.PLAYER_LEFT) {
+      return Proto.Player_PlayerState.MOVE_LEFT;
+    } else {
+      return null;
+    }
   }
 }

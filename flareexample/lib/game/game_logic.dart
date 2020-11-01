@@ -1,5 +1,5 @@
 import 'package:flame/game.dart';
-import 'package:flareexample/communication/player_message.dart';
+import 'package:flareexample/communication/message.dart';
 import 'package:flareexample/communication/remote_game_server.dart';
 import 'package:flareexample/entities/player.dart';
 import 'package:flareexample/game/entities_manager.dart';
@@ -18,7 +18,7 @@ class GameLogic extends BaseGame {
     __playerId = initPlayer.id;
     Player player = entitiesManager.getEntity(__playerId);
     add(player.playerComponent);
-    remoteGameServer.send([PlayerMessage(player: player)]);
+    remoteGameServer.send(Message.createEntitiesMessage([player]));
   }
 
   swithPlayerDirection() {
@@ -42,6 +42,6 @@ class GameLogic extends BaseGame {
     player.y = y + dy;
     player.playerComponent.angle = 0;
     add(player.playerComponent);
-    remoteGameServer.send([PlayerMessage(player: player)]);
+    remoteGameServer.send(Message.createEntitiesMessage([player]));
   }
 }

@@ -4,6 +4,7 @@ for i in -$@; do
   case $1 in
     --build=*)
       target="${i#*=}"
+      bash ./build_proto.sh $@
       flutter packages get
       flutter build $target 
       ;;
