@@ -8,10 +8,10 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     EntitiesManager manager = EntitiesManager();
     List<Entity> entities = [
-      Player(playerId: "Player1"),
-      Player(playerId: "Player2"),
-      Player(playerId: "Player3"),
-      Player(playerId: "Player4"),
+      Player.create(playerId: "Player1"),
+      Player.create(playerId: "Player2"),
+      Player.create(playerId: "Player3"),
+      Player.create(playerId: "Player4"),
     ];
 
     manager.update(entities);
@@ -23,10 +23,10 @@ void main() {
   test('EntitiesMnager update tests', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     EntitiesManager manager = EntitiesManager();
-    Player player1 = Player(playerId: "Player1");
-    Player player2 = Player(playerId: "Player2");
-    Player player3 = Player(playerId: "Player3");
-    Player player4 = Player(playerId: "Player4");
+    Player player1 = Player.create(playerId: "Player1");
+    Player player2 = Player.create(playerId: "Player2");
+    Player player3 = Player.create(playerId: "Player3");
+    Player player4 = Player.create(playerId: "Player4");
     List<Entity> entities = [player1, player2, player3, player4];
     manager.update(entities);
 
@@ -36,7 +36,7 @@ void main() {
       expect(entity.y, 0.0);
     });
 
-    manager.update([Player(playerId: "Player3", x: 20.0, y: 30.0)]);
+    manager.update([Player.create(playerId: "Player3", x: 20.0, y: 30.0)]);
     expect(manager.getAll()[2].x, 20.0);
     expect(manager.getAll()[2].y, 30.0);
   });
@@ -44,10 +44,10 @@ void main() {
    test('Removing from manager', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     EntitiesManager manager = EntitiesManager();
-    Player player1 = Player(playerId: "Player1");
-    Player player2 = Player(playerId: "Player2");
-    Player player3 = Player(playerId: "Player3");
-    Player player4 = Player(playerId: "Player4");
+    Player player1 = Player.create(playerId: "Player1");
+    Player player2 = Player.create(playerId: "Player2");
+    Player player3 = Player.create(playerId: "Player3");
+    Player player4 = Player.create(playerId: "Player4");
     List<Entity> entities = [player1, player2, player3, player4];
     manager.update(entities);
 

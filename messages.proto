@@ -6,24 +6,23 @@ message Message {
   }
 }
 
+// ---------------------
+
 message Entities {
   repeated Entity entities = 1;
 }
 
 message Entity {
-  uint32 id = 1;
-  string type = 2;
-  Position position = 3;
+  string id = 1;
+  Position position = 2;
   oneof entity {
-	Player player = 4;
-	Wall wall = 5;
+	Player player = 3;
+	Wall wall = 4;
   }
 }
 
 message Player {
-  uint32 id = 1;
-  PlayerState playerState = 2;
-
+  PlayerState playerState = 1;
   enum PlayerState {
    MOVE_UP = 0;
    MOVE_LEFT = 1;
@@ -35,6 +34,10 @@ message Player {
 message Wall {
 
 }
+
+// ---------------------
+
+
 
 // ------- common ------
 
