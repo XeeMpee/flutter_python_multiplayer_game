@@ -25,7 +25,7 @@ class RemoteGameServer {
   }
 
   void send(Proto.Message message) {
-    wsChannel.sink.add(message);
+    wsChannel.sink.add(message.writeToBuffer());
   }
 
   get sink => wsChannel.sink;
@@ -33,8 +33,8 @@ class RemoteGameServer {
 
   // ---------------------------------------
 
-  void __onMessage(dynamic message) {
-    // message is <Proto.Message> 
+  void __onMessage(dynamic rawMessage) {
+    Proto.Message message = Proto.Message.fromBuffer(rawMessage);
     print("Messages received: $message");
     if (message.hasEntities()) {
       __handlers[Proto.Entities](message.entities);
@@ -51,5 +51,6 @@ class RemoteGameServer {
         entities.add(Player.fromProto(entity));
       }
     }
+    this.entitiesManager.update(entities);
   }
 }
