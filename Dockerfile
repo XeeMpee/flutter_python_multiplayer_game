@@ -42,3 +42,6 @@ RUN flutter upgrade
 RUN flutter config --enable-web
 RUN flutter doctor
 
+# Creating workspace:
+# ----------------------------
+RUN mkdir workspace
