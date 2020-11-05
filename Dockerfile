@@ -45,3 +45,4 @@ RUN flutter doctor
 # Creating workspace:
 # ----------------------------
 RUN mkdir workspace
+

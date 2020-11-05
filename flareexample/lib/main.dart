@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flame/game.dart';
 import 'package:flame/util.dart';
 import 'package:flareexample/communication/remote_game_server.dart';
@@ -7,7 +9,9 @@ import 'package:flareexample/gui/screens/auth_screen.dart';
 import 'package:flareexample/gui/screens/game_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +19,19 @@ void main() async {
   await flameUtil.fullScreen();
   await flameUtil.setOrientation(DeviceOrientation.portraitUp);
 
-  final IOWebSocketChannel channel =
-      IOWebSocketChannel.connect("ws://192.168.0.206:8765/");
+  // Setting websocket channel:
+  final String channelUrl = "ws://192.168.0.206:8765/";
+  WebSocketChannel channel;
+  try {
+    if (Platform.isAndroid && Platform.isIOS) {
+      IOWebSocketChannel.connect(channelUrl);
+    } else {
+      // other platforms support
+    }
+  } on UnsupportedError {
+    // IsWeb...
+    channel = HtmlWebSocketChannel.connect(channelUrl);
+  }
 
   EntitiesManager entitiesManager = EntitiesManager();
   RemoteGameServer remoteGameServer = RemoteGameServer(
@@ -37,7 +52,7 @@ void main() async {
 
 class GameApp extends StatelessWidget {
   final GameLogic game;
-  final IOWebSocketChannel socketChannel;
+  final WebSocketChannel socketChannel;
   GameApp({Key key, this.game, this.socketChannel}) : super(key: key);
 
   @override
